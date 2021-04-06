@@ -47,7 +47,7 @@ resource "aws_ecs_task_definition" "spacelift_task" {
   [
     {
       "name": "spacelift-task",
-      "image": "${aws_ecr_repository.spacelift.repository_url}",
+      "image": "${aws_ecr_repository.spacelift.repository_url}:latest",
       "essential": true,
       "portMappings": [
         {
