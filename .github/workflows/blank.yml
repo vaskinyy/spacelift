@@ -66,4 +66,3 @@ jobs:
         task-definition: ${{ steps.task-def.outputs.task-definition }}
         service: spacelift-service
         cluster: spacelift-cluster
-        wait-for-service-stability: true
