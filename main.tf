@@ -1,6 +1,7 @@
+# providers
 provider "aws" {
   version = "~> 2.0"
-  region  = "eu-west-2"
+  region = "eu-west-2"
 }
 
 terraform {
@@ -11,6 +12,10 @@ terraform {
   }
 }
 
+# ECR
 resource "aws_ecr_repository" "spacelift" {
   name = "spacelift"
 }
+
+# ECS
+
