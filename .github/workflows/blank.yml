@@ -60,10 +60,10 @@ jobs:
         container-name: spacelift-task
         image: ${{ steps.ecr.outputs.imageUrl }}
 
-#    - name: Deploy Amazon ECS task definition
-#      uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-#      with:
-#        task-definition: ${{ steps.task-def.outputs.task-definition }}
-#        service: spacelift-service
-#        cluster: spacelift-cluster
-#        wait-for-service-stability: true
+    - name: Deploy Amazon ECS task definition
+      uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+      with:
+        task-definition: ${{ steps.task-def.outputs.task-definition }}
+        service: spacelift-service
+        cluster: spacelift-cluster
+        wait-for-service-stability: true
