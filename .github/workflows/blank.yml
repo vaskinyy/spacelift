@@ -26,7 +26,7 @@ jobs:
       run: npm test
       working-directory: ./app
     - name: Build
-      run: docker build --tag my-image .
+      run: docker build --tag spacelift .
     - name: Push to ECR
       id: ecr
       uses: jwalton/gh-ecr-push@v1
@@ -34,5 +34,5 @@ jobs:
         access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         region: eu-west-2
-        local-image: my-image
-        image: my-image:dev-${{ github.sha }}
+        local-image: spacelift
+        image: spacelift:dev-${{ github.sha }}
