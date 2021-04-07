@@ -55,7 +55,7 @@ resource "aws_ecs_task_definition" "spacelift_task" {
           "hostPort": 8080
         }
       ],
-      "memory": 513,
+      "memory": 512,
       "cpu": 256
     }
   ]
