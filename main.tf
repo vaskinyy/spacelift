@@ -185,11 +185,9 @@ locals {
 
     LoadBalancers = [
       {
-        LoadBalancer = {
-          "TargetGroupArn" = aws_lb_target_group.target_group.arn
-          "ContainerName" = aws_ecs_task_definition.spacelift_task.family
-          "ContainerPort" = "8080"
-        }
+        TargetGroupArn = aws_lb_target_group.target_group.arn
+        ContainerName = aws_ecs_task_definition.spacelift_task.family
+        ContainerPort = "8080"
       }
     ]
     NetworkConfiguration = {
