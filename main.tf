@@ -181,13 +181,17 @@ locals {
     Cluster = aws_ecs_service.spacelift_service.cluster
     TaskDefinition = aws_ecs_service.spacelift_service.task_definition
     LaunchType = aws_ecs_service.spacelift_service.launch_type
-    DesiredCount = aws_ecs_service.spacelift_service.desired_count
+    DesiredCount = 3
 
-    LoadBalancers = {
-      "TargetGroupArn" = aws_lb_target_group.target_group.arn
-      "ContainerName" = aws_ecs_task_definition.spacelift_task.family
-      "ContainerPort" = "8080"
-    }
+    LoadBalancers = [
+      {
+        LoadBalancer = {
+          "TargetGroupArn" = aws_lb_target_group.target_group.arn
+          "ContainerName" = aws_ecs_task_definition.spacelift_task.family
+          "ContainerPort" = "8080"
+        }
+      }
+    ]
     NetworkConfiguration = {
       "AwsvpcConfiguration" = {
         "Subnets"        = [aws_default_subnet.default_subnet_a.id, aws_default_subnet.default_subnet_b.id, aws_default_subnet.default_subnet_c.id]
