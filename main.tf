@@ -182,7 +182,7 @@ locals {
     ContainerDefinitions = [
       {
         Name                   = "spacelift-task"
-        Image                  = "${aws_ecr_repository.spacelift.repository_url}:latest"
+        Image                  = "${aws_ecr_repository.spacelift.repository_url}:dev-24ce50e5b1ac2ea4f7bbe4ccd4c0bf906c60340a"
         Essential              = true
         PortMappings           = [
           {
