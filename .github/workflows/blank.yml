@@ -13,29 +13,29 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/setup-node@v2
-      with:
-        node-version: '15'
-    - name: Install
-      run: npm install
-      working-directory: ./app
-    - name: Lint
-      run: npm run lint
-      working-directory: ./app
-    - name: Test
-      run: npm test
-      working-directory: ./app
-    - name: Build
-      run: docker build --tag spacelift .
-    - name: Push to ECR
-      id: ecr
-      uses: jwalton/gh-ecr-push@v1
-      with:
-        access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        region: eu-west-2
-        local-image: spacelift
-        image: spacelift:dev-${{ github.sha }}
+#    - uses: actions/setup-node@v2
+#      with:
+#        node-version: '15'
+#    - name: Install
+#      run: npm install
+#      working-directory: ./app
+#    - name: Lint
+#      run: npm run lint
+#      working-directory: ./app
+#    - name: Test
+#      run: npm test
+#      working-directory: ./app
+#    - name: Build
+#      run: docker build --tag spacelift .
+#    - name: Push to ECR
+#      id: ecr
+#      uses: jwalton/gh-ecr-push@v1
+#      with:
+#        access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#        secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#        region: eu-west-2
+#        local-image: spacelift
+#        image: spacelift:dev-${{ github.sha }}
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
@@ -50,7 +50,7 @@ jobs:
 
     - name: Update the stack
       run: |
-        aws cloudformation update-stack --stack-name SpaceliftServiceDeployment --use-previous-template ParameterKey=Image,ParameterValue='150036471084.dkr.ecr.eu-west-2.amazonaws.com/spacelift:dev-869cfcad84590d48897df5a8f73bef6aefc5293e'
+        aws cloudformation update-stack --stack-name SpaceliftServiceDeployment --use-previous-template --parameters ParameterKey=Image,ParameterValue='150036471084.dkr.ecr.eu-west-2.amazonaws.com/spacelift:dev-869cfcad84590d48897df5a8f73bef6aefc5293e'
 
 
 
