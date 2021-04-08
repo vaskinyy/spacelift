@@ -41,31 +41,31 @@ resource "aws_ecs_cluster" "spacelift_cluster" {
 }
 
 
-resource "aws_ecs_task_definition" "spacelift_task" {
-  family                   = "spacelift-task" # Naming our first task
-  container_definitions    = <<DEFINITION
-  [
-    {
-      "name": "spacelift-task",
-      "image": "${aws_ecr_repository.spacelift.repository_url}:latest",
-      "essential": true,
-      "portMappings": [
-        {
-          "containerPort": 8080,
-          "hostPort": 8080
-        }
-      ],
-      "memory": 512,
-      "cpu": 256
-    }
-  ]
-  DEFINITION
-  requires_compatibilities = ["FARGATE"] # Stating that we are using ECS Fargate
-  network_mode             = "awsvpc"    # Using awsvpc as our network mode as this is required for Fargate
-  memory                   = 512         # Specifying the memory our container requires
-  cpu                      = 256         # Specifying the CPU our container requires
-  execution_role_arn       = "${aws_iam_role.ecsTaskExecutionRole.arn}"
-}
+//resource "aws_ecs_task_definition" "spacelift_task" {
+//  family                   = "spacelift-task" # Naming our first task
+//  container_definitions    = <<DEFINITION
+//  [
+//    {
+//      "name": "spacelift-task",
+//      "image": "${aws_ecr_repository.spacelift.repository_url}:latest",
+//      "essential": true,
+//      "portMappings": [
+//        {
+//          "containerPort": 8080,
+//          "hostPort": 8080
+//        }
+//      ],
+//      "memory": 512,
+//      "cpu": 256
+//    }
+//  ]
+//  DEFINITION
+//  requires_compatibilities = ["FARGATE"] # Stating that we are using ECS Fargate
+//  network_mode             = "awsvpc"    # Using awsvpc as our network mode as this is required for Fargate
+//  memory                   = 512         # Specifying the memory our container requires
+//  cpu                      = 256         # Specifying the CPU our container requires
+//  execution_role_arn       = "${aws_iam_role.ecsTaskExecutionRole.arn}"
+//}
 
 resource "aws_iam_role" "ecsTaskExecutionRole" {
   name               = "ecsTaskExecutionRole"
@@ -135,25 +135,25 @@ resource "aws_lb_listener" "listener" {
   }
 }
 
-resource "aws_ecs_service" "spacelift_service" {
-  name            = "spacelift-service"                             # Naming our first service
-  cluster         = "${aws_ecs_cluster.spacelift_cluster.id}"             # Referencing our created Cluster
-  task_definition = "${aws_ecs_task_definition.spacelift_task.arn}" # Referencing the task our service will spin up
-  launch_type     = "FARGATE"
-  desired_count   = 3 # Setting the number of containers to 3
-
-  load_balancer {
-    target_group_arn = "${aws_lb_target_group.target_group.arn}" # Referencing our target group
-    container_name   = "${aws_ecs_task_definition.spacelift_task.family}"
-    container_port   = 8080 # Specifying the container port
-  }
-
-  network_configuration {
-    subnets          = ["${aws_default_subnet.default_subnet_a.id}", "${aws_default_subnet.default_subnet_b.id}", "${aws_default_subnet.default_subnet_c.id}"]
-    assign_public_ip = true                                                # Providing our containers with public IPs
-    security_groups  = ["${aws_security_group.service_security_group.id}"] # Setting the security group
-  }
-}
+//resource "aws_ecs_service" "spacelift_service" {
+//  name            = "spacelift-service"                             # Naming our first service
+//  cluster         = "${aws_ecs_cluster.spacelift_cluster.id}"             # Referencing our created Cluster
+//  task_definition = "${aws_ecs_task_definition.spacelift_task.arn}" # Referencing the task our service will spin up
+//  launch_type     = "FARGATE"
+//  desired_count   = 3 # Setting the number of containers to 3
+//
+//  load_balancer {
+//    target_group_arn = "${aws_lb_target_group.target_group.arn}" # Referencing our target group
+//    container_name   = "${aws_ecs_task_definition.spacelift_task.family}"
+//    container_port   = 8080 # Specifying the container port
+//  }
+//
+//  network_configuration {
+//    subnets          = ["${aws_default_subnet.default_subnet_a.id}", "${aws_default_subnet.default_subnet_b.id}", "${aws_default_subnet.default_subnet_c.id}"]
+//    assign_public_ip = true                                                # Providing our containers with public IPs
+//    security_groups  = ["${aws_security_group.service_security_group.id}"] # Setting the security group
+//  }
+//}
 
 
 resource "aws_security_group" "service_security_group" {
@@ -176,17 +176,42 @@ resource "aws_security_group" "service_security_group" {
 # CloudFormation
 
 locals {
-  properties = {
-    ServiceName = aws_ecs_service.spacelift_service.name
-    Cluster = aws_ecs_service.spacelift_service.cluster
-    TaskDefinition = aws_ecs_service.spacelift_service.task_definition
-    LaunchType = aws_ecs_service.spacelift_service.launch_type
+
+  container_definition = {
+    name                   = "spacelift-task"
+    image                  = "${aws_ecr_repository.spacelift.repository_url}:latest"
+    essential              = true
+    portMappings           = [
+      {
+        ContainerPort: 8080,
+        HostPort: 8080
+      }
+    ]
+    memory                 = 512
+    cpu                    = 256
+  }
+
+  task_definition_properties = {
+    Family = "spacelift-task"
+    ContainerDefinitions = [ container_definition ]
+    RequiresCompatibilities = ["FARGATE"]
+    NetworkMode = "awsvpc",
+    Memory = "512"
+    Cpu = "256"
+    ExecutionRoleArn = aws_iam_role.ecsTaskExecutionRole.arn
+  }
+
+  service_properties = {
+    ServiceName = "spacelift-service"
+    Cluster = aws_ecs_cluster.spacelift_cluster.id
+    TaskDefinition = { "Ref" = "TaskDefinition" }
+    LaunchType = "FARGATE"
     DesiredCount = 3
 
     LoadBalancers = [
       {
         TargetGroupArn = aws_lb_target_group.target_group.arn
-        ContainerName = aws_ecs_task_definition.spacelift_task.family
+        ContainerName = "spacelift-task"
         ContainerPort = "8080"
       }
     ]
@@ -200,9 +225,13 @@ locals {
   }
 
   resources = {
-    SpaceliftServiceDeployment = {
+    ECSService = {
       Type       = "AWS::ECS::Service"
-      Properties = local.properties
+      Properties = local.service_properties
+    }
+    TaskDefinition = {
+      Type = "AWS::ECS::TaskDefinition"
+      Properties = local.task_definition_properties
     }
   }
 
