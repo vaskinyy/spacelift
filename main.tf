@@ -177,23 +177,23 @@ resource "aws_security_group" "service_security_group" {
 
 locals {
 
-  container_definition = {
-    name                   = "spacelift-task"
-    image                  = "${aws_ecr_repository.spacelift.repository_url}:latest"
-    essential              = true
-    portMappings           = [
-      {
-        ContainerPort: 8080,
-        HostPort: 8080
-      }
-    ]
-    memory                 = 512
-    cpu                    = 256
-  }
-
   task_definition_properties = {
     Family = "spacelift-task"
-    ContainerDefinitions = [ container_definition ]
+    ContainerDefinitions = [
+      {
+        Name                   = "spacelift-task"
+        Image                  = "${aws_ecr_repository.spacelift.repository_url}:latest"
+        Essential              = true
+        PortMappings           = [
+          {
+            ContainerPort: 8080,
+            HostPort: 8080
+          }
+        ]
+        Memory                 = 512
+        Cpu                    = 256
+      }
+    ]
     RequiresCompatibilities = ["FARGATE"]
     NetworkMode = "awsvpc",
     Memory = "512"
