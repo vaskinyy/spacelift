@@ -201,6 +201,7 @@ locals {
     ExecutionRoleArn = aws_iam_role.ecsTaskExecutionRole.arn
   }
 
+
   service_properties = {
     ServiceName = "spacelift-service"
     Cluster = aws_ecs_cluster.spacelift_cluster.id
