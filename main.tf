@@ -182,7 +182,7 @@ locals {
     ContainerDefinitions = [
       {
         Name                   = "spacelift-task"
-        Image                  = "${aws_ecr_repository.spacelift.repository_url}:dev-24ce50e5b1ac2ea4f7bbe4ccd4c0bf906c60340a"
+        Image                  = join("", ["${aws_ecr_repository.spacelift.repository_url}:", { Ref : "InstanceTypeParameter" }])
         Essential              = true
         PortMappings           = [
           {
@@ -236,11 +236,19 @@ locals {
     }
   }
 
+  parameters = {
+    Image : {
+      "Type" : "String",
+      "Default" : "dev-24ce50e5b1ac2ea4f7bbe4ccd4c0bf906c60340a",
+      "Description" : "Image to be deployed."
+    }
+  }
+
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecs-service.html#cfn-ecs-service-cluster
   cloudformation_definition = {
-    Parameters = {}
     Conditions = {}
     Resources  = local.resources
+    Parameters = local.parameters
     Outputs    = {}
   }
 
