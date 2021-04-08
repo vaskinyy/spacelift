@@ -182,7 +182,7 @@ locals {
     ContainerDefinitions = [
       {
         Name                   = "spacelift-task"
-        Image                  = join("", ["${aws_ecr_repository.spacelift.repository_url}:", { Ref : "InstanceTypeParameter" }])
+        Image                  = { "Fn::Sub": [ "${repository}:${image}", { repository: "${aws_ecr_repository.spacelift.repository_url}:", image: {"Ref" : "Image" }} ]}
         Essential              = true
         PortMappings           = [
           {
