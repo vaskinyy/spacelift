@@ -177,14 +177,12 @@ resource "aws_security_group" "service_security_group" {
 
 locals {
 
-  image = {"Ref" : "Image" }
-
   task_definition_properties = {
     Family = "spacelift-task"
     ContainerDefinitions = [
       {
         Name                   = "spacelift-task"
-        Image                  = "${aws_ecr_repository.spacelift.repository_url}:${local.image}"
+        Image                  = {"Ref" : "Image" }
         Essential              = true
         PortMappings           = [
           {
@@ -241,7 +239,7 @@ locals {
   parameters = {
     Image : {
       "Type" : "String",
-      "Default" : "dev-24ce50e5b1ac2ea4f7bbe4ccd4c0bf906c60340a",
+      "Default" : "${aws_ecr_repository.spacelift.repository_url}:dev-24ce50e5b1ac2ea4f7bbe4ccd4c0bf906c60340a",
       "Description" : "Image to be deployed."
     }
   }
