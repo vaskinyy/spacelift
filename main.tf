@@ -184,9 +184,9 @@ locals {
     DesiredCount = aws_ecs_service.spacelift_service.desired_count
 
     LoadBalancers = {
-      "TargetGroupArn" = aws_ecs_service.spacelift_service.load_balancer.target_group_arn
-      "ContainerName" = aws_ecs_service.spacelift_service.load_balancer.container_name
-      "ContainerPort" = aws_ecs_service.spacelift_service.load_balancer.container_port
+      "TargetGroupArn" = aws_lb_target_group.target_group.arn
+      "ContainerName" = aws_ecs_task_definition.spacelift_task.family
+      "ContainerPort" = "8080"
     }
     NetworkConfiguration = {
       "AwsvpcConfiguration" = {
