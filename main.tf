@@ -172,3 +172,68 @@ resource "aws_security_group" "service_security_group" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
+
+# CloudFormation
+
+locals {
+  cluster           = "sandbox-infrastructure"
+  launch_type       = "FARGATE"
+  propagate_tags    = "TASK_DEFINITION"
+  service_name      = "tl-spacelift-example"
+  stack_name        = "SpaceliftServiceDeployment"
+  task_definition   = "nonempty:1"
+
+  properties = {
+    # CapacityProviderStrategy = []
+    Cluster = local.cluster
+    # DeployentConfiguration = ""
+    # DeploymentController = "" # defaults to ECS
+    DesiredCount = 1
+    # EnableECSManagedTags = enable_ecs_managed_tags
+    # EnableExecuteCommand = ""
+    # HealthCheckGracePeriodSeconds = ""
+    LaunchType = local.launch_type
+    # LoadBalancers = ""
+    NetworkConfiguration = {
+      "AwsvpcConfiguration" = {
+        "AssignPublicIp" = "DISABLED"
+        "SecurityGroups" = ["sg-01142f08b1d621248"]
+        "Subnets"        = ["subnet-6c4f5025", "subnet-4ca0f417", "subnet-0b72032703f8ce974"]
+      }
+    }
+    # PlacementConstraints = ""
+    # PlacementStrategies = ""
+    # PlatformVersion = ""
+    PropagateTags = local.propagate_tags
+    # Role = ""
+    # SchedulingStrategy = ""
+    # ServiceArn = ""
+    ServiceName = local.service_name
+    # ServiceRegistries = ""
+    Tags           = []
+    TaskDefinition = aws_ecs_task_definition.spacelift_task.arn # Cannot be empty when using ECS deployment controller (which is the default)
+  }
+
+  resources = {
+    SpaceliftServiceDeployment = {
+      Type       = "AWS::ECS::Service"
+      Properties = local.properties
+    }
+  }
+
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecs-service.html#cfn-ecs-service-cluster
+  cloudformation_definition = {
+    Parameters = {}
+    Conditions = {}
+    Resources  = local.resources
+    Outputs    = {}
+  }
+
+  cloudformation_definition_json_map = jsonencode(local.cloudformation_definition)
+}
+
+
+resource "aws_cloudformation_stack" "app" {
+  name          = local.stack_name
+  template_body = local.cloudformation_definition_json_map
+}
