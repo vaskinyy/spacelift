@@ -190,9 +190,9 @@ locals {
     }
     NetworkConfiguration = {
       "AwsvpcConfiguration" = {
-        "Subnets"        = aws_ecs_service.spacelift_service.network_configuration.subnets
+        "Subnets"        = [aws_default_subnet.default_subnet_a.id, aws_default_subnet.default_subnet_b.id, aws_default_subnet.default_subnet_c.id]
         "AssignPublicIp" = "ENABLED"
-        "SecurityGroups" = aws_ecs_service.spacelift_service.network_configuration.security_groups
+        "SecurityGroups" = [aws_security_group.service_security_group.id]
       }
     }
   }
