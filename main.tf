@@ -176,42 +176,25 @@ resource "aws_security_group" "service_security_group" {
 # CloudFormation
 
 locals {
-  cluster           = "sandbox-infrastructure"
-  launch_type       = "FARGATE"
-  propagate_tags    = "TASK_DEFINITION"
-  service_name      = "tl-spacelift-example"
-  stack_name        = "SpaceliftServiceDeployment"
-  task_definition   = "nonempty:1"
-
   properties = {
-    # CapacityProviderStrategy = []
-    Cluster = local.cluster
-    # DeployentConfiguration = ""
-    # DeploymentController = "" # defaults to ECS
-    DesiredCount = 1
-    # EnableECSManagedTags = enable_ecs_managed_tags
-    # EnableExecuteCommand = ""
-    # HealthCheckGracePeriodSeconds = ""
-    LaunchType = local.launch_type
-    # LoadBalancers = ""
+    ServiceName = aws_ecs_service.spacelift_service.name
+    Cluster = aws_ecs_service.spacelift_service.cluster
+    TaskDefinition = aws_ecs_service.spacelift_service.task_definition
+    LaunchType = aws_ecs_service.spacelift_service.launch_type
+    DesiredCount = aws_ecs_service.spacelift_service.desired_count
+
+    LoadBalancers = {
+      "TargetGroupArn" = aws_ecs_service.spacelift_service.load_balancer.target_group_arn
+      "ContainerName" = aws_ecs_service.spacelift_service.load_balancer.container_name
+      "ContainerPort" = aws_ecs_service.spacelift_service.load_balancer.container_port
+    }
     NetworkConfiguration = {
       "AwsvpcConfiguration" = {
-        "AssignPublicIp" = "DISABLED"
-        "SecurityGroups" = ["sg-01142f08b1d621248"]
-        "Subnets"        = ["subnet-6c4f5025", "subnet-4ca0f417", "subnet-0b72032703f8ce974"]
+        "Subnets"        = aws_ecs_service.spacelift_service.network_configuration.subnets
+        "AssignPublicIp" = "ENABLED"
+        "SecurityGroups" = aws_ecs_service.spacelift_service.network_configuration.security_groups
       }
     }
-    # PlacementConstraints = ""
-    # PlacementStrategies = ""
-    # PlatformVersion = ""
-    PropagateTags = local.propagate_tags
-    # Role = ""
-    # SchedulingStrategy = ""
-    # ServiceArn = ""
-    ServiceName = local.service_name
-    # ServiceRegistries = ""
-    Tags           = []
-    TaskDefinition = aws_ecs_task_definition.spacelift_task.arn # Cannot be empty when using ECS deployment controller (which is the default)
   }
 
   resources = {
@@ -234,6 +217,6 @@ locals {
 
 
 resource "aws_cloudformation_stack" "app" {
-  name          = local.stack_name
+  name          = "SpaceliftServiceDeployment"
   template_body = local.cloudformation_definition_json_map
 }
