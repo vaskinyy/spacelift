@@ -50,7 +50,7 @@ jobs:
 
     - name: Update the stack
       run: |
-        aws cloudformation update-stack --stack-name SpaceliftServiceDeployment --use-previous-template --parameters ParameterKey=Image,ParameterValue='150036471084.dkr.ecr.eu-west-2.amazonaws.com/spacelift:dev-24ce50e5b1ac2ea4f7bbe4ccd4c0bf906c60340a'
+        aws cloudformation update-stack --stack-name SpaceliftServiceDeployment --use-previous-template --parameters ParameterKey=Image,ParameterValue='150036471084.dkr.ecr.eu-west-2.amazonaws.com/spacelift:dev-869cfcad84590d48897df5a8f73bef6aefc5293e'
 
     - name: Wait for the update to complete
       run: |
