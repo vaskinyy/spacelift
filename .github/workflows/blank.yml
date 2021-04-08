@@ -48,21 +48,26 @@ jobs:
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
 
-    - name: Download task definition
+    - name: Update the stack
       run: |
-        aws ecs describe-task-definition --task-definition spacelift-task --query taskDefinition > task-definition.json
+        aws cloudformation update-stack --stack-name SpaceliftServiceDeployment --use-previous-template ParameterKey=Image,ParameterValue='150036471084.dkr.ecr.eu-west-2.amazonaws.com/spacelift:dev-869cfcad84590d48897df5a8f73bef6aefc5293e'
 
-    - name: Fill in the new image ID in the Amazon ECS task definition
-      id: task-def
-      uses: aws-actions/amazon-ecs-render-task-definition@v1
-      with:
-        task-definition: task-definition.json
-        container-name: spacelift-task
-        image: ${{ steps.ecr.outputs.imageUrl }}
 
-    - name: Deploy Amazon ECS task definition
-      uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-      with:
-        task-definition: ${{ steps.task-def.outputs.task-definition }}
-        service: spacelift-service
-        cluster: spacelift-cluster
+#    - name: Download task definition
+#      run: |
+#        aws ecs describe-task-definition --task-definition spacelift-task --query taskDefinition > task-definition.json
+#
+#    - name: Fill in the new image ID in the Amazon ECS task definition
+#      id: task-def
+#      uses: aws-actions/amazon-ecs-render-task-definition@v1
+#      with:
+#        task-definition: task-definition.json
+#        container-name: spacelift-task
+#        image: ${{ steps.ecr.outputs.imageUrl }}
+#
+#    - name: Deploy Amazon ECS task definition
+#      uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+#      with:
+#        task-definition: ${{ steps.task-def.outputs.task-definition }}
+#        service: spacelift-service
+#        cluster: spacelift-cluster
