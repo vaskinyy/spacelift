@@ -28,8 +28,8 @@ jobs:
       with:
         script: |
           console.log(context)
-          const id = ${{ steps.ecr.outputs.imageUrl }}.replace(/^https?:\/\//,'')
-          core.setOutput('imageId', id)
+#          const id = context.ecr.outputs.imageUrl }}.replace(/^https?:\/\//,'')
+#          core.setOutput('imageId', id)
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
