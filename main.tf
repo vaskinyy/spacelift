@@ -159,7 +159,7 @@ locals {
     Cluster = aws_ecs_cluster.spacelift_cluster.id
     TaskDefinition = { "Ref" = "TaskDefinition" }
     LaunchType = "FARGATE"
-    DesiredCount = 3
+    DesiredCount = 1
 
     LoadBalancers = [
       {
