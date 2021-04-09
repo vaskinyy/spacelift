@@ -97,6 +97,10 @@ resource "aws_lb_target_group" "target_group" {
   target_type = "ip"
   vpc_id      = "${aws_default_vpc.default_vpc.id}" # Referencing the default VPC
   deregistration_delay = 10
+
+  health_check {
+    interval = 5
+  }
 }
 
 resource "aws_lb_listener" "listener" {
