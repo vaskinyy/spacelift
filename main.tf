@@ -99,7 +99,7 @@ resource "aws_lb_target_group" "target_group" {
   deregistration_delay = 10
 
   health_check {
-    interval = 5
+    interval = 6
   }
 }
 
