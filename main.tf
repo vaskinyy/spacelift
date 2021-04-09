@@ -96,6 +96,7 @@ resource "aws_lb_target_group" "target_group" {
   protocol    = "HTTP"
   target_type = "ip"
   vpc_id      = "${aws_default_vpc.default_vpc.id}" # Referencing the default VPC
+  deregistration_delay = 10
 }
 
 resource "aws_lb_listener" "listener" {
