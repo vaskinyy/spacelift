@@ -43,7 +43,7 @@ jobs:
 
     - name: Update the stack
       run: |
-        aws cloudformation update-stack --stack-name SpaceliftServiceDeployment --use-previous-template --parameters ParameterKey=Image,ParameterValue='${{ steps.getId.outputs.imageUrl }}'
+        aws cloudformation update-stack --stack-name SpaceliftServiceDeployment --use-previous-template --parameters ParameterKey=Image,ParameterValue='${{ steps.getId.outputs.imageId }}'
 
     - name: Wait for the update to complete
       run: |
